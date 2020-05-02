@@ -1,32 +1,12 @@
-import random
+from flask import Flask
+import game
+import datetime
 
-def generate_roles_list(players):
-    def calculate_roles_quantity(player_numbers):
-        roles_quantity = {}
-        roles_quantity['mafia'] = round(player_numbers*0.23)
-        roles_quantity['civilian'] = round(player_numbers*0.61)
-        roles_quantity['doctor'] = round(player_numbers*0.08)
-        roles_quantity['detective'] = round(player_numbers*0.08)
-        return roles_quantity
+app = Flask(__name__)
 
-    player_numbers = len(players)
-    print('Players quantity:',player_numbers)
-    roles_quantity = calculate_roles_quantity(player_numbers)
-    print(roles_quantity,'\n')
-
-    #generate list of all roles
-    roles_list = []
-    for role in roles_quantity:
-        for i in range(roles_quantity[role]):
-            roles_list.append(str(role))
-
-    #shuffle them to make an arbitrary order
-    random.shuffle(roles_list)
-    for player in players:
-        players[player] = roles_list.pop() #random.randint(0,player_numbers-1)
-
-
-players = {'Denis':None,
+@app.route('/')
+def hello_world():
+    players = {'Denis':None,
                 'DimaM':None,
                 'TanyaP':None,
                 'Danya':None,
@@ -36,8 +16,33 @@ players = {'Denis':None,
                 'Ali':None,
                 'Alice':None,
                 'EgorM':None}
+    roles_quantity, players = game.generate_roles_list(players)
+    msg = []
+    msg.append(str(datetime.datetime.today().hour))
+    msg.append(':')
+    msg.append(str(datetime.datetime.today().minute))
+    msg.append('<br>')
 
-generate_roles_list(players)
-for p in players:
-    print(p,'-->',players[p])
+    for i in roles_quantity:
+        msg.append(i)
+        msg.append(str(roles_quantity[i]))
+        msg.append(':')
+
+    msg.append('<br><br>')
+    for p in players:
+        msg.append('<b>')
+        msg.append(p)
+        msg.append('</b>')
+        msg.append('-->')
+        msg.append(players[p])
+        msg.append('<br>')
+        # print(p,'-->',players[p])
+    msg = ' '.join(msg)
+    return msg
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
 
